@@ -97,6 +97,28 @@ Allow **Outbound connections** for the following Datadog endpoints:
 
 {{< /site-region >}}
 
+## Using the testing tunnel with multiple environments
+
+The testing tunnel can be configured to work with multiple environments, including localhost, by using the `startUrl`, `startUrlOverride`, and `resourceUrlSubstitutionRegexes` fields. These fields allow you to substitute parts of the starting URL and resource URLs based on the provided regular expressions, enabling you to redirect requests to different environments during test execution.
+
+For example, you can redirect requests for frontend assets to a local development environment while keeping the main page and API calls served by the production environment. This is useful for testing changes in isolation without needing to deploy the entire application.
+
+To use these features, specify the appropriate values in the `startUrl`, `startUrlOverride`, and `resourceUrlSubstitutionRegexes` fields. The `startUrl` and `startUrlOverride` fields allow you to modify the starting URL, while the `resourceUrlSubstitutionRegexes` field allows you to modify the URLs of all subsequent resource requests.
+
+For `resourceUrlSubstitutionRegexes`, specify an array of strings, each containing two parts separated by a pipe character `|`: `<regex>|<rewriting rule>`. The first part is the regex to apply to the resource URL, and the second is the expression to rewrite the URL.
+
+A simple example looks like the following:
+
+```shell
+https://prod.my-app.com/resources/(.*)|http://localhost:3000/resources/$1
+```
+
+This regular expression captures the path of the resource URL and rewrites it to point to the local development environment. Given the URL https://prod.my-app.com/resources/image.png, it would rewrite it to http://localhost:3000/resources/image.png.
+
+This feature allows you to test specific parts of your application in different environments, including `localhost`, ensuring that changes are properly validated before being deployed to production.
+
+You can learn more about these features in the [Testing Multiple Environment page][4].
+
 ## Further reading
 
 {{< partial name="whats-next/whats-next.html" >}}
@@ -104,3 +126,4 @@ Allow **Outbound connections** for the following Datadog endpoints:
 [1]: /synthetics/private_locations
 [2]: https://www.npmjs.com/package/@datadog/datadog-ci
 [3]: /continuous_testing/cicd_integrations#use-the-cli
+[4]: /continuous_testing/environments/multiple_env
